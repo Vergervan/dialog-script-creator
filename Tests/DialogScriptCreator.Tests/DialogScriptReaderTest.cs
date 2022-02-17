@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.IO;
 
 namespace DialogScriptCreator.Tests
 {
@@ -6,6 +7,7 @@ namespace DialogScriptCreator.Tests
     public class DialogScriptReaderTest
     {
         private DialogScriptReader reader;
+        private const string scriptPath = "C:\\Users\\Vergervan\\Desktop\\GitRepos\\dialog-script-creator\\Tests\\DialogScriptCreator.Tests\\test.ds";
         [SetUp]
         public void Setup()
         {
@@ -15,16 +17,25 @@ namespace DialogScriptCreator.Tests
         [Test]
         public void TestReadFile()
         {
-            Assert.IsTrue(reader.ReadScript("test.ds"));
+            Assert.IsTrue(reader.ReadScript(scriptPath));
         }
         [Test]
         public void TestReadStringsCount()
         {
-            if (!reader.ReadScript("test.ds"))
+            if (!reader.ReadScript(scriptPath))
             {
                 Assert.Fail();
             }
-            Assert.IsTrue(reader.ScriptStringLength == 6);
+            Assert.IsTrue(reader.ScriptStringLength == 4);
+        }
+        [Test]
+        public void TestReadDialogs()
+        {
+            if (!reader.ReadScript(scriptPath))
+            {
+                Assert.Fail();
+            }
+            Assert.IsTrue(reader.DialogsCount == 3);
         }
     }
 }
