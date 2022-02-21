@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using System.IO;
+using System.Diagnostics;
 
 namespace DialogScriptCreator.Tests
 {
@@ -12,6 +12,10 @@ namespace DialogScriptCreator.Tests
         public void Setup()
         {
             reader = new DialogScriptReader();
+            if (!reader.ReadScript(scriptPath))
+            {
+                Assert.Fail();
+            }
         }
 
         [Test]
@@ -20,22 +24,25 @@ namespace DialogScriptCreator.Tests
             Assert.IsTrue(reader.ReadScript(scriptPath));
         }
         [Test]
-        public void TestReadStringsCount()
-        {
-            if (!reader.ReadScript(scriptPath))
-            {
-                Assert.Fail();
-            }
-            Assert.IsTrue(reader.ScriptStringLength == 4);
-        }
-        [Test]
         public void TestReadDialogs()
         {
-            if (!reader.ReadScript(scriptPath))
-            {
-                Assert.Fail();
-            }
             Assert.IsTrue(reader.DialogsCount == 3);
+        }
+        [Test]
+        public void TestRoutesCount()
+        {
+            Assert.IsTrue(reader.GetDialogByName("defaultDialog").RoutesCount == 1);
+        }
+        //Для работы Debug в Visual Studio
+        [OneTimeSetUp]
+        public void StartTest()
+        {
+            Trace.Listeners.Add(new ConsoleTraceListener());
+        }
+        [OneTimeTearDown]
+        public void EndTest()
+        {
+            Trace.Flush();
         }
     }
 }
