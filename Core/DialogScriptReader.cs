@@ -25,8 +25,8 @@ namespace DialogScriptCreator
         private static Dictionary<char, DialogType> dialogChars = new Dictionary<char, DialogType>{ {'D', DialogType.Dialog}, { 'M', DialogType.Monolog }, { 'A', DialogType.Answer } };
         private Regex dialogRegex = new Regex("^\\[([M|D|A])(!)?\\]([a-zA-Z0-9]+)=([a-zA-Z0-9]+)");
         private string _scriptname;
-        private Dictionary<string, Dialog> _dialogNames = new();
-        private List<RouteNames> _dialogRoutes = new();
+        private Dictionary<string, Dialog> _dialogNames = new Dictionary<string, Dialog>();
+        private List<RouteNames> _dialogRoutes = new List<RouteNames>();
         public string ScriptName { get => _scriptname; }
         public int DialogsCount { get => _dialogNames.Count; }
         public bool ReadScript(string scriptname)

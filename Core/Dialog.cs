@@ -28,7 +28,7 @@ namespace DialogScriptCreator
             _dialogValue = dialogValue;
             if(type == DialogType.Dialog)
             {
-                _routes = new();
+                _routes = new List<Route>();
             }
         }
         public void AddRoute(Dialog from, Dialog to)
