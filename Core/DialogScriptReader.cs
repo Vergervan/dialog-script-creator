@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DialogScriptCreator
@@ -27,6 +28,7 @@ namespace DialogScriptCreator
         private string _scriptname;
         private Dictionary<string, Dialog> _dialogNames = new Dictionary<string, Dialog>();
         private List<RouteNames> _dialogRoutes = new List<RouteNames>();
+        public IEnumerable<Dialog> GetDialogs() => _dialogNames.Select(item => item.Value).ToArray();
         public string ScriptName { get => _scriptname; }
         public int DialogsCount { get => _dialogNames.Count; }
         public bool ReadScript(string scriptname)
