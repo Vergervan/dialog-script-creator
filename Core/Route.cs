@@ -28,5 +28,13 @@
             _available = false;
         }
         public void Switch() => _available = !_available;
+        public static bool operator ==(Route obj1, Route obj2)
+        {
+            return (obj1._from.Name == obj2._from.Name && obj1._to.Name == obj2._to.Name);
+        }
+        public static bool operator !=(Route obj1, Route obj2)
+        {
+            return (obj1._from.Name != obj2._from.Name || obj1._to.Name != obj2._to.Name);
+        }
     }
 }
