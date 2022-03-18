@@ -10,6 +10,8 @@ namespace DialogScriptCreator
         private ConditionKeeper _keeper;
         public bool Switchable { get => _switchable; }
         public bool Available { get => _available && ConditionsTrue(); }
+        public int ConditionsCount => _from.Conditions.Count();
+        public bool HasConditions => ConditionsCount > 0;
         public Dialog From { get => _from; }
         public Dialog To { get => _to; }
         public Route(Dialog from, Dialog to, ConditionKeeper keeper)
