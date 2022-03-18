@@ -18,6 +18,7 @@ namespace DialogScriptCreator
             foreach(var str in conditions) 
                 _conditions.Add(str, false);
         }
+        public bool HasCondition(string name) => _conditions.ContainsKey(name);
         public void SetConditionValue(string name, bool b)
         {
             if (!_conditions.ContainsKey(name))
