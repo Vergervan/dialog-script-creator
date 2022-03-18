@@ -24,8 +24,9 @@ namespace DialogScriptCreator
     public class DialogScriptReader
     {
         private static Dictionary<char, DialogType> dialogChars = new Dictionary<char, DialogType>{ {'D', DialogType.Dialog}, { 'M', DialogType.Monolog }, { 'A', DialogType.Answer } };
-        private Regex dialogRegex = new Regex("^\\[([M|D|A])(!)?\\]([a-zA-Z0-9]+)=([a-zA-Z0-9]+)");
+        private Regex dialogRegex = new Regex("^\\[([M|D|A])(!)?(\\([\\w\\,]+\\))?\\](\\w+)=(\\w+)");
         private string _scriptname;
+        private ConditionKeeper _keeper;
         private Dictionary<string, Dialog> _dialogNames = new Dictionary<string, Dialog>();
         private List<RouteNames> _dialogRoutes = new List<RouteNames>();
         public IEnumerable<Dialog> GetDialogs() => _dialogNames.Select(item => item.Value).ToArray();
@@ -64,6 +65,7 @@ namespace DialogScriptCreator
 
         private void ReadDialogs(string[] lines)
         {
+            _keeper = new ConditionKeeper();
             bool fillDialog = false;
             Dialog prevDialog = null;
             for(int i = 0; i < lines.Length; i++)
@@ -87,7 +89,15 @@ namespace DialogScriptCreator
                 if (string.IsNullOrWhiteSpace(lines[i]) || lines[i][0] == '#') continue;
                 Match match = dialogRegex.Match(lines[i]);
                 if (!match.Success) continue;
-                prevDialog = new Dialog(match.Groups[3].Value, match.Groups[4].Value, dialogChars[match.Groups[1].Value[0]], match.Groups[2].Success);
+                prevDialog = new Dialog(match.Groups[4].Value, match.Groups[5].Value, dialogChars[match.Groups[1].Value[0]], match.Groups[2].Success);
+                if (match.Groups[3].Success)
+                {
+                    if (!prevDialog.IsAnswer)
+                        throw new Exception("Bad type of dialog for used arguments");
+                    string[] conditions = match.Groups[3].Value.Substring(1, match.Groups[3].Value.Length-2).Split(',');
+                    prevDialog.AddConditions(conditions);
+                    _keeper.AddConditions(conditions);
+                }
                 _dialogNames.Add(prevDialog.Name, prevDialog);
                 if(prevDialog.Type == DialogType.Dialog)
                 {
@@ -96,9 +106,10 @@ namespace DialogScriptCreator
             }
             foreach(var item in _dialogRoutes)
             {
-                item.dialog.AddRoute(_dialogNames[item.from], _dialogNames[item.to]);
+                item.dialog.AddRoute(new Route(_dialogNames[item.from], _dialogNames[item.to], _keeper));
             }
         }
         public Dialog GetDialogByName(string name) => _dialogNames[name].Clone();
+        public ConditionKeeper GetConditionKeeper() => _keeper;
     }
 }

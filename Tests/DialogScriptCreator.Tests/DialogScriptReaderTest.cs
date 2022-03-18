@@ -26,13 +26,24 @@ namespace DialogScriptCreator.Tests
         [Test]
         public void TestReadDialogs()
         {
-            Assert.IsTrue(reader.DialogsCount == 3);
+            Trace.WriteLine(reader.DialogsCount);
+            Assert.IsTrue(reader.DialogsCount == 6);
         }
         [Test]
         public void TestRoutesCount()
         {
             Assert.IsTrue(reader.GetDialogByName("defaultDialog").RoutesCount == 1);
         }
+        [Test]
+        public void ShowAllDialogs()
+        {
+            foreach(var item in reader.GetDialogs())
+            {
+                Trace.WriteLine($"{item.Name} = {item.Value}");
+            }
+            Assert.Pass();
+        }
+
         //Для работы Debug в Visual Studio
         [OneTimeSetUp]
         public void StartTest()

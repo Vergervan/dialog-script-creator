@@ -7,6 +7,7 @@ namespace DialogScriptCreator
         private DialogType _type;
         private string _name;
         private List<Route> _routes;
+        private List<string> _conditions;
         private string _dialogValue;
         private bool _switchable;
 
@@ -15,6 +16,7 @@ namespace DialogScriptCreator
         public bool IsAnswer { get => _type == DialogType.Answer; }
         public bool Switchable { get => _switchable; }
         public IEnumerable<Route> Routes { get => _routes; }
+        public IEnumerable<string> Conditions { get => _conditions; }
         public int RoutesCount { get => _routes == null ? 0 : _routes.Count; }
         public DialogType Type { get => _type; }
         public string Name { get => _name; }
@@ -26,14 +28,27 @@ namespace DialogScriptCreator
             _type = type;
             _switchable = switchable;
             _dialogValue = dialogValue;
-            if(type == DialogType.Dialog)
+            switch (type)
             {
-                _routes = new List<Route>();
+                case DialogType.Dialog:
+                    _routes = new List<Route>();
+                    break;
+                case DialogType.Answer:
+                    _conditions = new List<string>();
+                    break;
             }
         }
-        public void AddRoute(Dialog from, Dialog to)
+        public void AddRoute(Route route)
         {
-            _routes.Add(new Route(from, to));
+            _routes.Add(route);
+        }
+        public void AddCondition(string name)
+        {
+            _conditions.Add(name);
+        }
+        public void AddConditions(IEnumerable<string> conditions)
+        {
+            _conditions.AddRange(conditions);
         }
         public Dialog Clone()
         {
@@ -42,8 +57,11 @@ namespace DialogScriptCreator
             {
                 foreach(var item in _routes)
                 {
-                    newDialog.AddRoute(item.From.Clone(), item.To.Clone());
+                    newDialog.AddRoute(item.Clone());
                 }
+            }else if (newDialog.IsAnswer)
+            {
+                newDialog.AddConditions(Conditions);
             }
             return newDialog;
         }
