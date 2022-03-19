@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Diagnostics;
+using System.Linq;
 
 namespace DialogScriptCreator.Tests
 {
@@ -16,6 +17,12 @@ namespace DialogScriptCreator.Tests
             {
                 Assert.Fail();
             }
+        }
+        [Test]
+        public void TestTriggers()
+        {
+            Route route = reader.GetDialogByName("defaultDialog").Routes.ElementAt(1);
+            Assert.IsTrue(route.HasTriggers);
         }
 
         [Test]
