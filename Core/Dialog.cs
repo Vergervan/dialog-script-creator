@@ -18,6 +18,18 @@ namespace DialogScriptCreator
         public ICollection<Route> Routes { get => _routes; }
         public ICollection<string> Conditions { get => _conditions; }
         public int RoutesCount { get => _routes == null ? 0 : _routes.Count; }
+        public bool HasAvailableRoutes { 
+            get
+            {
+                if (!IsDialog) return false;
+                foreach(var item in Routes)
+                {
+                    if (item.Available)
+                        return true;
+                }
+                return false;
+            } 
+        }
         public DialogType Type { get => _type; }
         public string Name { get => _name; }
         public string Value { get => _dialogValue; }
