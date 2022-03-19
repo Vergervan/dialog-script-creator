@@ -15,8 +15,8 @@ namespace DialogScriptCreator
         public bool IsMonolog { get => _type == DialogType.Monolog; }
         public bool IsAnswer { get => _type == DialogType.Answer; }
         public bool Switchable { get => _switchable; }
-        public IEnumerable<Route> Routes { get => _routes; }
-        public IEnumerable<string> Conditions { get => _conditions; }
+        public ICollection<Route> Routes { get => _routes; }
+        public ICollection<string> Conditions { get => _conditions; }
         public int RoutesCount { get => _routes == null ? 0 : _routes.Count; }
         public DialogType Type { get => _type; }
         public string Name { get => _name; }

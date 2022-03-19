@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace DialogScriptCreator
 {
@@ -14,11 +15,15 @@ namespace DialogScriptCreator
     {
         public Dialog dialog;
         public string from, to;
-        public RouteNames(Dialog dialog, string from, string to)
+        public bool hasTriggers;
+        public string[] triggers;
+        public RouteNames(Dialog dialog, string from, string to, params string[] triggers)
         {
             this.from = from;
             this.to = to;
             this.dialog = dialog;
+            this.triggers = triggers;
+            hasTriggers = triggers != null && triggers.Length > 0;
         }
     } 
     public class DialogScriptReader
@@ -29,7 +34,7 @@ namespace DialogScriptCreator
         private ConditionKeeper _keeper;
         private Dictionary<string, Dialog> _dialogNames = new Dictionary<string, Dialog>();
         private List<RouteNames> _dialogRoutes = new List<RouteNames>();
-        public IEnumerable<Dialog> GetDialogs() => _dialogNames.Select(item => item.Value).ToArray();
+        public ICollection<Dialog> GetDialogs() => _dialogNames.Select(item => item.Value).ToArray();
         public string ScriptName { get => _scriptname; }
         public int DialogsCount { get => _dialogNames.Count; }
         public bool ReadScript(string scriptname)
@@ -78,7 +83,14 @@ namespace DialogScriptCreator
                         var splt = op.Split('>');
                         if (splt.Length != 2)
                             throw new ScriptSyntaxException();
-                        _dialogRoutes.Add(new RouteNames(prevDialog, splt[0].Trim(), splt[1].Trim()));
+                        int triggerStart = splt[1].IndexOf('[');
+                        int triggerEnd = splt[1].IndexOf(']');
+                        string[] triggers = null;
+                        if (triggerStart != -1)
+                        {
+                            triggers = splt[1].Substring(triggerStart + 1, triggerEnd - triggerStart - 1).Split(',').Where(str => !string.IsNullOrWhiteSpace(str)).Select(str => str.Trim()).ToArray();
+                        }
+                        _dialogRoutes.Add(new RouteNames(prevDialog, splt[0].Trim(), triggerStart == -1 ? splt[1].Trim() : splt[1].Substring(0, triggerStart).Trim(), triggers));
                     }
                     else
                     {
@@ -106,7 +118,7 @@ namespace DialogScriptCreator
             }
             foreach(var item in _dialogRoutes)
             {
-                item.dialog.AddRoute(new Route(_dialogNames[item.from], _dialogNames[item.to], _keeper));
+                item.dialog.AddRoute(new Route(_dialogNames[item.from], _dialogNames[item.to], _keeper, item.triggers));
             }
         }
         public Dialog GetDialogByName(string name) => _dialogNames[name].Clone();

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace DialogScriptCreator
 {
@@ -8,18 +9,22 @@ namespace DialogScriptCreator
         private bool _switchable = false;
         private bool _available = true;
         private ConditionKeeper _keeper;
+        private string[] _triggers;
         public bool Switchable { get => _switchable; }
         public bool Available { get => _available && ConditionsTrue(); }
         public int ConditionsCount => _from.Conditions.Count();
         public bool HasConditions => ConditionsCount > 0;
+        public bool HasTriggers => _triggers != null && _triggers.Length > 0;
+        public ICollection<string> Triggers => _triggers;
         public Dialog From { get => _from; }
         public Dialog To { get => _to; }
-        public Route(Dialog from, Dialog to, ConditionKeeper keeper)
+        public Route(Dialog from, Dialog to, ConditionKeeper keeper, params string[] triggers)
         {
             _from = from;
             _to = to;
             _switchable = from.Switchable;
             _keeper = keeper;
+            _triggers = triggers;
         }
         public void TurnOn()
         {
@@ -52,6 +57,6 @@ namespace DialogScriptCreator
             }
             return true;
         }
-        public Route Clone() => new Route(_from.Clone(), _to.Clone(), _keeper);
+        public Route Clone() => new Route(_from.Clone(), _to.Clone(), _keeper, _triggers);
     }
 }
