@@ -11,7 +11,9 @@ namespace DialogScriptCreator
         private ConditionKeeper _keeper;
         private string[] _triggers;
         public bool Switchable { get => _switchable; }
-        public bool Available { get => _available && ConditionsTrue(); }
+        public bool Available { get => _available; }
+        //Checks if all conditions are true
+        public bool ConditionsMet => ConditionsTrue();
         public int ConditionsCount => _from.Conditions.Count();
         public bool HasConditions => ConditionsCount > 0;
         public bool HasTriggers => _triggers != null && _triggers.Length > 0;
