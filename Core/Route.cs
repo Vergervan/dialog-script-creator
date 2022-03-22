@@ -24,8 +24,8 @@ namespace DialogScriptCreator
         public Route(Dialog parent, Dialog from, Dialog to, ConditionKeeper keeper, params string[] triggers)
         {
             _parent = parent;
-            _from = from;
-            _to = to;
+            _from = from.Clone(this);
+            _to = to.Clone(this);
             _switchable = from.Switchable;
             _keeper = keeper;
             _triggers = triggers;
@@ -61,6 +61,6 @@ namespace DialogScriptCreator
             }
             return true;
         }
-        public Route Clone(Dialog parent) => new Route(parent, _from.Clone(), _to.Clone(), _keeper, _triggers);
+        public Route Clone(Dialog parent) => new Route(parent, _from, _to, _keeper, _triggers);
     }
 }

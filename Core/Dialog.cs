@@ -10,6 +10,7 @@ namespace DialogScriptCreator
         private List<string> _conditions;
         private string _dialogValue;
         private bool _switchable;
+        private Route _parentRoute;
 
         public bool IsDialog { get => _type == DialogType.Dialog; }
         public bool IsMonolog { get => _type == DialogType.Monolog; }
@@ -18,6 +19,7 @@ namespace DialogScriptCreator
         public ICollection<Route> Routes { get => _routes; }
         public ICollection<string> Conditions { get => _conditions; }
         public int RoutesCount { get => _routes == null ? 0 : _routes.Count; }
+        public Route ParentRoute => _parentRoute;
         public bool HasAvailableRoutes 
         { 
             get
@@ -76,9 +78,10 @@ namespace DialogScriptCreator
         {
             _conditions.AddRange(conditions);
         }
-        public Dialog Clone()
+        public Dialog Clone(Route parentRoute = null)
         {
             var newDialog = new Dialog(_name, _dialogValue, _type, _switchable);
+            _parentRoute = parentRoute;
             if(newDialog.IsDialog)
             {
                 foreach(var item in _routes)
