@@ -118,7 +118,7 @@ namespace DialogScriptCreator
             }
             foreach(var item in _dialogRoutes)
             {
-                item.dialog.AddRoute(new Route(_dialogNames[item.from], _dialogNames[item.to], _keeper, item.triggers));
+                item.dialog.AddRoute(new Route(item.dialog, _dialogNames[item.from], _dialogNames[item.to], _keeper, item.triggers));
             }
         }
         public Dialog GetDialogByName(string name) => _dialogNames[name].Clone();

@@ -5,7 +5,7 @@ namespace DialogScriptCreator
 {
     public class Route
     {
-        private Dialog _from, _to;
+        private Dialog _from, _to, _parent;
         private bool _switchable = false;
         private bool _available = true;
         private ConditionKeeper _keeper;
@@ -20,8 +20,10 @@ namespace DialogScriptCreator
         public ICollection<string> Triggers => _triggers;
         public Dialog From { get => _from; }
         public Dialog To { get => _to; }
-        public Route(Dialog from, Dialog to, ConditionKeeper keeper, params string[] triggers)
+        public Dialog Parent => _parent;
+        public Route(Dialog parent, Dialog from, Dialog to, ConditionKeeper keeper, params string[] triggers)
         {
+            _parent = parent;
             _from = from;
             _to = to;
             _switchable = from.Switchable;
@@ -59,6 +61,6 @@ namespace DialogScriptCreator
             }
             return true;
         }
-        public Route Clone() => new Route(_from.Clone(), _to.Clone(), _keeper, _triggers);
+        public Route Clone(Dialog parent) => new Route(parent, _from.Clone(), _to.Clone(), _keeper, _triggers);
     }
 }

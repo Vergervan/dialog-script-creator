@@ -83,7 +83,7 @@ namespace DialogScriptCreator
             {
                 foreach(var item in _routes)
                 {
-                    newDialog.AddRoute(item.Clone());
+                    newDialog.AddRoute(item.Clone(newDialog));
                 }
             }else if (newDialog.IsAnswer)
             {
