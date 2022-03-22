@@ -18,7 +18,8 @@ namespace DialogScriptCreator
         public ICollection<Route> Routes { get => _routes; }
         public ICollection<string> Conditions { get => _conditions; }
         public int RoutesCount { get => _routes == null ? 0 : _routes.Count; }
-        public bool HasAvailableRoutes { 
+        public bool HasAvailableRoutes 
+        { 
             get
             {
                 if (!IsDialog) return false;
@@ -29,6 +30,19 @@ namespace DialogScriptCreator
                 }
                 return false;
             } 
+        }
+        public int AvailableRoutesCount
+        {
+            get
+            {
+                int counter = 0;
+                foreach (var item in Routes)
+                {
+                    if (item.Available)
+                        ++counter;
+                }
+                return counter;
+            }
         }
         public DialogType Type { get => _type; }
         public string Name { get => _name; }
