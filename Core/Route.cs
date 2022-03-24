@@ -3,17 +3,18 @@ using System.Linq;
 
 namespace DialogScriptCreator
 {
-    public class Route
+    public class Route : IUpdateConditions
     {
         private Dialog _from, _to, _parent;
         private bool _switchable = false;
         private bool _available = true;
         private ConditionKeeper _keeper;
         private string[] _triggers;
+        private bool _conditionsMet = true;
         public bool Switchable { get => _switchable; }
         public bool Available { get => _available; }
         //Checks if all conditions are true
-        public bool ConditionsMet => ConditionsTrue();
+        public bool ConditionsMet => _conditionsMet;
         public int ConditionsCount => _from.Conditions.Count();
         public bool HasConditions => ConditionsCount > 0;
         public bool HasTriggers => _triggers != null && _triggers.Length > 0;
@@ -28,7 +29,13 @@ namespace DialogScriptCreator
             _to = to.Clone(this);
             _switchable = from.Switchable;
             _keeper = keeper;
+            _keeper.SubscribeOnUpdates(this);
+            ((IUpdateConditions)this).OnConditionsUpdate();
             _triggers = triggers;
+        }
+        ~Route()
+        {
+            _keeper.UnsubscribeFromUpdates(this);
         }
         public void TurnOn()
         {
@@ -52,14 +59,17 @@ namespace DialogScriptCreator
             return (obj1._from.Name != obj2._from.Name || obj1._to.Name != obj2._to.Name);
         }
 
-        private bool ConditionsTrue()
+        void IUpdateConditions.OnConditionsUpdate()
         {
             foreach(var str in _from.Conditions)
             {
-                if (!_keeper.GetConditionValue(str)) 
-                    return false;
+                if (!_keeper.GetConditionValue(str))
+                {
+                    _conditionsMet = false;
+                    return;
+                }
             }
-            return true;
+            _conditionsMet = true;
         }
         public Route Clone(Dialog parent) => new Route(parent, _from, _to, _keeper, _triggers);
     }

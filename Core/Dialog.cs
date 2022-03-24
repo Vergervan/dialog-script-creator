@@ -25,7 +25,7 @@ namespace DialogScriptCreator
             get
             {
                 if (!IsDialog) return false;
-                foreach(var item in Routes)
+                foreach (var item in Routes)
                 {
                     if (item.Available)
                         return true;
@@ -66,6 +66,16 @@ namespace DialogScriptCreator
                     break;
             }
         }
+        //public int GetAvailableRoutesCount(bool withConditionsMet = false)
+        //{
+        //    int counter = 0;
+        //    foreach (var item in Routes)
+        //    {
+        //        if (item.Available && (!withConditionsMet || item.ConditionsMet))
+        //            ++counter;
+        //    }
+        //    return counter;
+        //}
         public void AddRoute(Route route)
         {
             _routes.Add(route);
@@ -81,14 +91,16 @@ namespace DialogScriptCreator
         public Dialog Clone(Route parentRoute = null)
         {
             var newDialog = new Dialog(_name, _dialogValue, _type, _switchable);
-            _parentRoute = parentRoute;
-            if(newDialog.IsDialog)
+            newDialog._parentRoute = parentRoute;
+            System.Diagnostics.Trace.WriteLine($"{Name} {RoutesCount}");
+            if (newDialog.IsDialog)
             {
-                foreach(var item in _routes)
+                foreach (var item in _routes)
                 {
                     newDialog.AddRoute(item.Clone(newDialog));
                 }
-            }else if (newDialog.IsAnswer)
+            }
+            else if (newDialog.IsAnswer)
             {
                 newDialog.AddConditions(Conditions);
             }

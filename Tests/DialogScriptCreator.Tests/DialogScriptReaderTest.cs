@@ -24,6 +24,13 @@ namespace DialogScriptCreator.Tests
             Route route = reader.GetDialogByName("defaultDialog").Routes.ElementAt(1);
             Assert.IsTrue(route.HasTriggers);
         }
+        [Test]
+        public void TestDialogRoutes()
+        {
+            Route route = reader.GetDialogByName("defaultDialog").Routes.ElementAt(1);
+            //Trace.WriteLine($"{route.To.Name} {route.To.RoutesCount}");
+            Assert.IsTrue(route.To.RoutesCount > 0);
+        }
 
         [Test]
         public void TestReadFile()

@@ -5,9 +5,15 @@ using System.Text;
 
 namespace DialogScriptCreator
 {
+    public interface IUpdateConditions
+    {
+        void OnConditionsUpdate();
+    }
+
     public class ConditionKeeper
     {
         private Dictionary<string, bool> _conditions;
+        private List<IUpdateConditions> subscribers = new List<IUpdateConditions>();
         public ConditionKeeper()
         {
             _conditions = new Dictionary<string, bool>();
@@ -24,6 +30,7 @@ namespace DialogScriptCreator
             if (!_conditions.ContainsKey(name))
                 throw new KeyNotFoundException();
             _conditions[name] = b;
+            UpdateSubscribers();
         }
         public bool GetConditionValue(string name)
         {
@@ -43,6 +50,24 @@ namespace DialogScriptCreator
                 if (_conditions.ContainsKey(str)) continue;
                 _conditions.Add(str, false);
             }
+        }
+        private void UpdateSubscribers()
+        {
+            lock (subscribers)
+            {
+                foreach (var sub in subscribers)
+                {
+                    sub.OnConditionsUpdate();
+                }
+            }
+        }
+        public void SubscribeOnUpdates(IUpdateConditions subscriber)
+        {
+            subscribers.Add(subscriber);
+        }
+        public void UnsubscribeFromUpdates(IUpdateConditions subscriber)
+        {
+            subscribers.Remove(subscriber);
         }
     }
 }
