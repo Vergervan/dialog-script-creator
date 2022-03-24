@@ -22,11 +22,12 @@ namespace DialogScriptCreator
         public Dialog From { get => _from; }
         public Dialog To { get => _to; }
         public Dialog Parent => _parent;
-        public Route(Dialog parent, Dialog from, Dialog to, ConditionKeeper keeper, params string[] triggers)
+        public Route(Dialog parent, Dialog from, Dialog to, ConditionKeeper keeper, params string[] triggers) : this(parent, from, to, keeper, false, triggers) { }
+        public Route(Dialog parent, Dialog from, Dialog to, ConditionKeeper keeper, bool cloneDialogs, params string[] triggers)
         {
             _parent = parent;
-            _from = from.Clone(this);
-            _to = to.Clone(this);
+            _from = cloneDialogs ? from.Clone(this) : from;
+            _to = cloneDialogs ? to.Clone(this) : to;
             _switchable = from.Switchable;
             _keeper = keeper;
             _keeper.SubscribeOnUpdates(this);
@@ -58,7 +59,15 @@ namespace DialogScriptCreator
         {
             return (obj1._from.Name != obj2._from.Name || obj1._to.Name != obj2._to.Name);
         }
-
+        //private void CheckParentRoutes(Route route)
+        //{
+        //    if (Equals(route.Parent, null) || Equals(route.Parent.ParentRoute, null)) return;
+        //    if (!route.Parent.ParentRoute.To.HasAvailableRoutes)
+        //    {
+        //        route.Parent.ParentRoute.TurnOff();
+        //        CheckParentRoutes(route.Parent.ParentRoute);
+        //    }
+        //}
         void IUpdateConditions.OnConditionsUpdate()
         {
             foreach(var str in _from.Conditions)
@@ -71,6 +80,6 @@ namespace DialogScriptCreator
             }
             _conditionsMet = true;
         }
-        public Route Clone(Dialog parent) => new Route(parent, _from, _to, _keeper, _triggers);
+        public Route Clone(Dialog parent) => new Route(parent, _from, _to, _keeper, true, _triggers);
     }
 }
